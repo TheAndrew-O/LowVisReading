@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="2"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@color/white">
+        <ScrollView
+            android:id="@+id/textScrollView"
+            android:layout_alignParentTop="true"
+            android:layout_margin="3dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+            <TextView
+                android:id="@+id/textDisplay"
+                android:layout_width="match_parent"
+                android:textSize="22sp"
+                android:textColor="@color/black"
+                android:text="Hello, World!"
+                android:layout_gravity="center_horizontal"
+                android:layout_height="wrap_content" />
+        </ScrollView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@color/cardview_shadow_start_color">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/takePicture"
+            android:tint="@color/white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            app:fabCustomSize="100dp"
+            android:layout_marginBottom="50dp"
+            android:layout_marginLeft="16dp"
+            android:src="@drawable/ic_baseline_photo_camera_24">
+        </com.google.android.material.floatingactionbutton.FloatingActionButton>
+
+        <SeekBar
+            android:id="@+id/textSize"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="50dp"/>
+
+    </LinearLayout>
+
+</LinearLayout>
