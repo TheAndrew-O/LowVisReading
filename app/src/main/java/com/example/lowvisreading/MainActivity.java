@@ -21,7 +21,9 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,7 +44,9 @@ import java.net.URI;
 public class MainActivity extends AppCompatActivity {
     FloatingActionButton picture_button;
     SeekBar textSize;
+    SeekBar blindSpotSize;
     TextView text_data;
+    View blindSpot;
     Bitmap bitmap;
     TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
 
@@ -61,16 +65,21 @@ public class MainActivity extends AppCompatActivity {
         // Initialize screen components
         picture_button = findViewById(R.id.takePicture);
         textSize = findViewById(R.id.textSize);
+        blindSpotSize = findViewById(R.id.blindSpotSize);
         text_data = findViewById(R.id.textDisplay);
+        blindSpot = findViewById(R.id.blindSpot);
+
         // Set permissions
         cameraPermissions = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
         storagePermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
         // Ask Permissions when launch app
         if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{
                     Manifest.permission.CAMERA
             }, REQUEST_CAMERA_CODE);
         }
+        // take picture
         picture_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -78,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Change Text size
         textSize.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -85,6 +95,30 @@ public class MainActivity extends AppCompatActivity {
                 int max = 70;
                 int text_size = min + (max - min) * i / seekBar.getMax();
                 text_data.setTextSize(text_size);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        blindSpotSize.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                int min = 100;
+                int max = 900;
+                int blind_size = min + (max - min) * i / seekBar.getMax();
+                ViewGroup.LayoutParams params = blindSpot.getLayoutParams();
+                params.width = blind_size;
+                params.height = blind_size;
+                blindSpot.setLayoutParams(params);
+
             }
 
             @Override
