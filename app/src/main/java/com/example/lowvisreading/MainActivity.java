@@ -40,6 +40,7 @@ import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     FloatingActionButton picture_button;
@@ -141,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onSuccess(Text text) {
                     String result = text.getText();
                     Log.i("TEXT", result);
-                    text_data.setText(result);
+                    text_data.setText(result.toUpperCase());
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
