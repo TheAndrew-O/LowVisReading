@@ -45,7 +45,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class flipped extends AppCompatActivity {
     FloatingActionButton picture_button;
     SeekBar textSize;
     SeekBar blindSpotSize;
@@ -71,16 +71,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_flipped);
         // Initialize screen components
         picture_button = findViewById(R.id.takePicture);
         textSize = findViewById(R.id.textSize);
         blindSpotSize = findViewById(R.id.blindSpotSize);
         text_data = findViewById(R.id.textDisplay);
         blindSpot = findViewById(R.id.blindSpot);
-        flip_screen = findViewById(R.id.flipUp);
+        flip_screen = findViewById(R.id.flipDown);
         draw_spot = findViewById(R.id.draw_blind_spot);
-
         Bundle extras = getIntent().getExtras();
 
         // Set permissions
@@ -88,8 +87,8 @@ public class MainActivity extends AppCompatActivity {
         storagePermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
         // Ask Permissions when launch app
-        if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{
+        if(ContextCompat.checkSelfPermission(flipped.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(flipped.this, new String[]{
                     Manifest.permission.CAMERA
             }, REQUEST_CAMERA_CODE);
         }
@@ -179,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
                 blindSpot.setLayoutParams(params);
 
                 int text_pad = blind_size + extra_space;
-                text_data.setPadding(text_data.getPaddingLeft(), text_data.getPaddingTop(), text_data.getPaddingRight(), text_pad);
+                text_data.setPadding(text_data.getPaddingLeft(), text_pad, text_data.getPaddingRight(), text_data.getPaddingBottom());
                 text_data.requestLayout();
 
             }
@@ -194,11 +193,11 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        // Flip the screen
+
         flip_screen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, flipped.class);
+                Intent intent = new Intent(flipped.this, MainActivity.class);
                 intent.putExtra("text",text_data.getText().toString());
                 ViewGroup.LayoutParams params = blindSpot.getLayoutParams();
                 intent.putExtra("blind_size", params.width);
@@ -215,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
         draw_spot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, draw_blindSpot.class);
+                Intent intent = new Intent(flipped.this, draw_blindSpot.class);
                 ViewGroup.LayoutParams params = blindSpot.getLayoutParams();
                 intent.putExtra("blind_size", params.width);
                 startActivityForResult(intent, DRAW_REQUEST_CODE);
@@ -238,12 +237,10 @@ public class MainActivity extends AppCompatActivity {
                 params.height = dim;
                 blindSpot.setLayoutParams(params);
 
-                // Log.w("WEEEEEEEEEEEEEE", Integer.toString(dim));
-
                 flip_screen.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(MainActivity.this, flipped.class);
+                        Intent intent = new Intent(flipped.this, MainActivity.class);
                         intent.putExtra("text", text_data.getText().toString());
                         ViewGroup.LayoutParams params = blindSpot.getLayoutParams();
                         intent.putExtra("blind_size", params.width);
@@ -273,7 +270,7 @@ public class MainActivity extends AppCompatActivity {
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(MainActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(flipped.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -302,7 +299,7 @@ public class MainActivity extends AppCompatActivity {
                         recognizeText();
                     }
                     else{
-                        Toast.makeText(MainActivity.this, "Cancelled", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(flipped.this, "Cancelled", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
