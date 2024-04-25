@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
     private String[] storagePermissions;
 
     private String custom_scotoma = null;
+    private int max_scotoma_size = 900;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
                     Manifest.permission.CAMERA
             }, REQUEST_CAMERA_CODE);
         }
-
+        // if screen was previously flipped
         Intent change_scotoma_intent = getIntent();
         if(change_scotoma_intent != null){
             String path = change_scotoma_intent.getStringExtra("blind_spot_path");
@@ -114,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
                 int blindSizeProgress = extras.getInt("blind_size_prog", 0);
                 blindSpotSize.setProgress(blindSizeProgress);
                 custom_scotoma = path;
+                max_scotoma_size = 1000;
             }
         }
 
@@ -131,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
             textSize.setProgress(textSizeProgress);
             int blindSizeProgress = extras.getInt("blind_size_prog", 0);
             blindSpotSize.setProgress(blindSizeProgress);
+            max_scotoma_size = extras.getInt("max_size", 900);
             String path = extras.getString("blind_spot_path","");
             if(!path.equals("")){
                 Bitmap bitmap = BitmapFactory.decodeFile(path);
@@ -171,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 int min = 100;
-                int max = 900;
+                int max = max_scotoma_size;
                 int blind_size = min + (max - min) * i / seekBar.getMax();
                 ViewGroup.LayoutParams params = blindSpot.getLayoutParams();
                 params.width = blind_size;
@@ -207,6 +210,7 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("blind_size_prog", blindSpotSize.getProgress());
                 if(custom_scotoma != null){
                     intent.putExtra("blind_spot_path",custom_scotoma);
+                    intent.putExtra("max_size",1000);
                 }
                 startActivity(intent);
             }
@@ -218,6 +222,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, draw_blindSpot.class);
                 ViewGroup.LayoutParams params = blindSpot.getLayoutParams();
                 intent.putExtra("blind_size", params.width);
+                max_scotoma_size = 1000;
                 startActivityForResult(intent, DRAW_REQUEST_CODE);
             }
         });

@@ -28,10 +28,16 @@ public class draw_view extends View {
     private Stack<Path> stack_paths = new Stack<>();
     private PointF start_point = new PointF();
     private PointF last_point =  new PointF();
+    private float minX, maxX, minY, maxY;
 
     public draw_view(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         setUpDraw();
+        minX = Float.MAX_VALUE;
+        minY = Float.MAX_VALUE;
+
+        maxX = Float.MIN_VALUE;
+        maxY = Float.MIN_VALUE;
     }
     private void setUpDraw(){
         draw_paint = new Paint();
@@ -65,10 +71,12 @@ public class draw_view extends View {
                 draw_path.moveTo(touchX, touchY);
                 start_point.set(touchX, touchY);
                 last_point.set(touchX, touchY);
+                updateBounds(touchX, touchY);
                 break;
             case MotionEvent.ACTION_MOVE:
                 draw_path.lineTo(touchX, touchY);
                 last_point.set(touchX, touchY);
+                updateBounds(touchX, touchY);
                 break;
             case MotionEvent.ACTION_UP:
                 closeShapeIfNeeded();
@@ -131,4 +139,27 @@ public class draw_view extends View {
         this.setDrawingCacheEnabled(false);
         return bitmap;
     }
+
+    public Bitmap getCroppedBitmap(){
+        if (minX < maxX && minY < maxY) {
+            return Bitmap.createBitmap(canvas_bitmap, (int) minX, (int) minY, (int) (maxX - minX), (int) (maxY - minY));
+        }
+        return canvas_bitmap;
+    }
+
+    private void updateBounds(float x, float y){
+        if(x < minX){
+            minX = x;
+        }
+        if(x > maxX){
+            maxX = x;
+        }
+        if(y < minY){
+            minY = y;
+        }
+        if(y > maxY){
+            maxY = y;
+        }
+    }
+
 }

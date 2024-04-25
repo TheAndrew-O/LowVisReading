@@ -23,21 +23,29 @@
             android:layout_height="0dp"
             android:layout_weight=".2"
             android:gravity="center"
+            android:background="#FFCCCCCC"
             android:orientation="horizontal">
             <ImageButton
                 android:id="@+id/save_blind_spot"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:background="@drawable/round_corners"
+                android:background="@drawable/rc_green"
                 android:src="@drawable/ic_baseline_save_alt_24"
-                android:layout_marginRight="16dp"/>
+                android:layout_marginRight="25dp"/>
             <ImageButton
                 android:id="@+id/undo_blind_spot"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:src="@drawable/ic_baseline_undo_24"
                 android:background="@drawable/rc_blue"
-                android:layout_marginLeft="16dp"/>
+                android:layout_marginHorizontal="25dp"/>
+            <ImageButton
+                android:id="@+id/exit_draw"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_baseline_cancel_24"
+                android:background="@drawable/round_corners"
+                android:layout_marginLeft="25dp"/>
 
         </LinearLayout>
     </LinearLayout>

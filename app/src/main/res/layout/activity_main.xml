@@ -18,7 +18,7 @@
             android:layout_margin="3dp"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1.4"
+            android:layout_weight="1.42"
             android:background="@color/white">
             <TextView
                 android:id="@+id/textDisplay"
@@ -35,8 +35,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.6"
-            android:background="@color/cardview_shadow_start_color"
+            android:layout_weight="0.58"
+            android:background="#39FFFFFF"
             android:orientation="horizontal">
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -48,7 +48,8 @@
                 app:fabCustomSize="100dp"
                 android:layout_marginBottom="150dp"
                 android:layout_marginLeft="16dp"
-                android:src="@drawable/ic_baseline_photo_camera_24">
+                android:src="@drawable/ic_baseline_photo_camera_24"
+                android:backgroundTint="@color/AddButtonBlue">
             </com.google.android.material.floatingactionbutton.FloatingActionButton>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -58,11 +59,17 @@
                 android:orientation="vertical">
                 <SeekBar
                     android:id="@+id/textSize"
+                    android:thumb="@drawable/custom_seekbar"
+                    android:progressDrawable="@drawable/seekbar_progress"
+                    android:splitTrack="false"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="50dp"/>
                 <SeekBar
                     android:id="@+id/blindSpotSize"
+                    android:thumb="@drawable/custom_seekbaar2"
+                    android:progressDrawable="@drawable/seekbar_prog2"
+                    android:splitTrack="false"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
@@ -75,23 +82,26 @@
             android:layout_gravity="center_horizontal"
             android:gravity="center_horizontal"
             android:orientation="horizontal"
-            android:background="@color/teal_200">
+            android:background="#39FFFFFF">
             <ImageButton
                 android:id="@+id/flipUp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/purple_500"
+                android:background="@drawable/flipdown"
                 android:src="@drawable/ic_baseline_keyboard_double_arrow_up_24"
                 android:paddingHorizontal="15dp"
-                android:paddingVertical="2dp"/>
+                android:paddingVertical="2dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginBottom="10dp"/>
             <ImageButton
                 android:id="@+id/draw_blind_spot"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/EmergencyRed"
+                android:background="@drawable/draw_but"
                 android:layout_marginHorizontal="10dp"
                 android:src="@drawable/ic_baseline_draw_24"
                 android:paddingHorizontal="15dp"
+                android:layout_marginLeft="25dp"
                 android:paddingVertical="2dp"/>
         </LinearLayout>
     </LinearLayout>

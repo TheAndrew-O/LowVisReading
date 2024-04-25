@@ -19,6 +19,7 @@ public class draw_blindSpot extends AppCompatActivity {
     private draw_view drawing;
     private ImageButton undo;
     private ImageButton save;
+    private ImageButton cancel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +29,8 @@ public class draw_blindSpot extends AppCompatActivity {
         drawing = findViewById(R.id.draw_view);
         undo = findViewById(R.id.undo_blind_spot);
         save = findViewById(R.id.save_blind_spot);
+        cancel = findViewById(R.id.exit_draw);
+
         Bundle extras = getIntent().getExtras();
         int dim = 100;
         if(extras != null){
@@ -46,7 +49,7 @@ public class draw_blindSpot extends AppCompatActivity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Bitmap scotoma_bitmap = drawing.getBitmap();
+                Bitmap scotoma_bitmap = drawing.getCroppedBitmap();
 
                 String file_name = "blind_spot_overlay.png";
                 File file = new File(getExternalFilesDir(null), file_name);
@@ -62,6 +65,14 @@ public class draw_blindSpot extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setResult(Activity.RESULT_CANCELED);
+                finish();
             }
         });
     }
