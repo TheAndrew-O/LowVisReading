@@ -5,46 +5,36 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".flipped">
+    tools:context=".training">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:weightSum="2">
+        <ScrollView
+            android:id="@+id/textScrollView"
+            android:layout_alignParentTop="true"
+            android:layout_margin="3dp"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1.42"
+            android:background="@color/white">
+            <TextView
+                android:id="@+id/textDisplay"
+                android:layout_width="wrap_content"
+                android:textSize="22sp"
+                android:textColor="@color/black"
+                android:gravity="center_horizontal|center_vertical"
+                android:paddingTop="230dp"
+                android:paddingBottom="50dp"
+                android:layout_height="match_parent" />
+        </ScrollView>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal"
-            android:background="#39FFFFFF">
-            <ImageButton
-                android:id="@+id/flipDown"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/flipdown"
-                android:src="@drawable/ic_baseline_keyboard_double_arrow_down_24"
-                android:paddingHorizontal="15dp"
-                android:paddingVertical="2dp"
-                android:layout_marginRight="25dp"
-                android:layout_marginTop="10dp"/>
-            <ImageButton
-                android:id="@+id/draw_blind_spot"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/draw_but"
-                android:layout_marginHorizontal="10dp"
-                android:src="@drawable/ic_baseline_draw_24"
-                android:paddingHorizontal="15dp"
-                android:paddingVertical="2dp"
-                android:layout_marginLeft="25dp"
-                android:layout_marginTop="10dp"/>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.46"
+            android:layout_weight="0.58"
             android:background="#39FFFFFF"
             android:orientation="horizontal">
 
@@ -53,15 +43,18 @@
                 android:tint="@color/white"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
                 app:fabCustomSize="100dp"
+                android:layout_marginBottom="150dp"
                 android:layout_marginLeft="16dp"
-                android:layout_marginTop="50dp"
                 android:src="@drawable/ic_baseline_photo_camera_24"
                 android:backgroundTint="@color/AddButtonBlue">
             </com.google.android.material.floatingactionbutton.FloatingActionButton>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_gravity="bottom"
+                android:gravity="bottom"
                 android:orientation="vertical">
                 <SeekBar
                     android:id="@+id/textSize"
@@ -70,28 +63,31 @@
                     android:splitTrack="false"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="50dp"/>
+                    android:labelFor="@id/textSize"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="TEXT SIZE"
+                    android:layout_marginBottom="20dp"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginRight="20dp"
                     android:textSize="22sp"
                     android:textStyle="bold"
-                    android:textColor="@color/white"
-                    android:layout_marginBottom="20dp"/>
+                    android:textColor="@color/white"/>
                 <SeekBar
                     android:id="@+id/blindSpotSize"
                     android:thumb="@drawable/custom_seekbaar2"
                     android:progressDrawable="@drawable/seekbar_prog2"
                     android:splitTrack="false"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_marginTop="10dp"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="BLIND SPOT SIZE"
+                    android:layout_marginBottom="100dp"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginRight="20dp"
                     android:textSize="22sp"
@@ -99,24 +95,34 @@
                     android:textColor="@color/white"/>
             </LinearLayout>
         </LinearLayout>
-        <ScrollView
-            android:id="@+id/textScrollView"
-            android:layout_alignParentTop="true"
-            android:layout_margin="3dp"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1.54"
-            android:background="@color/white">
-            <TextView
-                android:id="@+id/textDisplay"
-                android:layout_width="match_parent"
-                android:textSize="22sp"
-                android:textColor="@color/black"
-                android:text=""
-                android:gravity="center_horizontal"
-                android:paddingBottom="300dp"
-                android:layout_height="match_parent" />
-        </ScrollView>
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:background="#39FFFFFF">
+            <ImageButton
+                android:id="@+id/flipUp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/flipdown"
+                android:src="@drawable/ic_baseline_keyboard_double_arrow_up_24"
+                android:paddingHorizontal="15dp"
+                android:paddingVertical="2dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginBottom="10dp"/>
+            <ImageButton
+                android:id="@+id/draw_blind_spot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/draw_but"
+                android:layout_marginHorizontal="10dp"
+                android:src="@drawable/ic_baseline_draw_24"
+                android:paddingHorizontal="15dp"
+                android:layout_marginLeft="25dp"
+                android:paddingVertical="2dp"/>
+        </LinearLayout>
     </LinearLayout>
     <ImageView
         android:id="@+id/blindSpot"

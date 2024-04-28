@@ -4,6 +4,7 @@
     package="com.example.lowvisreading">
 
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -15,6 +16,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar"
         tools:targetApi="31">
+        <activity
+            android:name=".camera_view"
+            android:exported="false" />
+        <activity
+            android:name=".training"
+            android:exported="false" />
         <activity
             android:name=".draw_view"
             android:exported="false" />

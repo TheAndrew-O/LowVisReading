@@ -18,23 +18,24 @@
             android:layout_margin="3dp"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_weight="1.42"
             android:background="@color/white">
             <TextView
                 android:id="@+id/textDisplay"
                 android:layout_width="match_parent"
                 android:textSize="22sp"
                 android:textColor="@color/black"
-                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+                android:text="LOREM IPSUM DOLOR SIT AMET, CONSECTETUR ADIPISCING ELIT, SED DO EIUSMOD TEMPOR INCIDIDUNT UT LABORE ET DOLORE MAGNA ALIQUA. UT ENIM AD MINIM VENIAM, QUIS NOSTRUD EXERCITATION ULLAMCO LABORIS NISI UT ALIQUIP EX EA COMMODO CONSEQUAT. DUIS AUTE IRURE DOLOR IN REPREHENDERIT IN VOLUPTATE VELIT ESSE CILLUM DOLORE EU FUGIAT NULLA PARIATUR. EXCEPTEUR SINT OCCAECAT CUPIDATAT NON PROIDENT, SUNT IN CULPA QUI OFFICIA DESERUNT MOLLIT ANIM ID EST LABORUM."
                 android:gravity="center_horizontal"
-                android:layout_height="match_parent" />
+                android:scrollbars="vertical"
+                android:layout_height="wrap_content" />
         </ScrollView>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@color/cardview_shadow_start_color"
+            android:layout_weight="0.58"
+            android:background="#39FFFFFF"
             android:orientation="horizontal">
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -44,9 +45,10 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 app:fabCustomSize="100dp"
-                android:layout_marginBottom="50dp"
+                android:layout_marginBottom="150dp"
                 android:layout_marginLeft="16dp"
-                android:src="@drawable/ic_baseline_photo_camera_24">
+                android:src="@drawable/ic_baseline_photo_camera_24"
+                android:backgroundTint="@color/AddButtonBlue">
             </com.google.android.material.floatingactionbutton.FloatingActionButton>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -56,17 +58,70 @@
                 android:orientation="vertical">
                 <SeekBar
                     android:id="@+id/textSize"
+                    android:thumb="@drawable/custom_seekbar"
+                    android:progressDrawable="@drawable/seekbar_progress"
+                    android:splitTrack="false"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="50dp"/>
+                    android:labelFor="@id/textSize"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TEXT SIZE"
+                    android:layout_marginBottom="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginRight="20dp"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"/>
                 <SeekBar
                     android:id="@+id/blindSpotSize"
+                    android:thumb="@drawable/custom_seekbaar2"
+                    android:progressDrawable="@drawable/seekbar_prog2"
+                    android:splitTrack="false"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
-                    android:layout_marginBottom="50dp"/>
+                    android:layout_marginTop="10dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="BLIND SPOT SIZE"
+                    android:layout_marginBottom="100dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginRight="20dp"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"/>
             </LinearLayout>
-
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:background="#39FFFFFF">
+            <ImageButton
+                android:id="@+id/flipUp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/flipdown"
+                android:src="@drawable/ic_baseline_keyboard_double_arrow_up_24"
+                android:paddingHorizontal="15dp"
+                android:paddingVertical="2dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginBottom="10dp"/>
+            <ImageButton
+                android:id="@+id/draw_blind_spot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/draw_but"
+                android:layout_marginHorizontal="10dp"
+                android:src="@drawable/ic_baseline_draw_24"
+                android:paddingHorizontal="15dp"
+                android:layout_marginLeft="25dp"
+                android:paddingVertical="2dp"/>
         </LinearLayout>
     </LinearLayout>
     <ImageView
@@ -76,4 +131,11 @@
         android:layout_gravity="center"
         android:layout_marginBottom="50dp"
         android:src="@drawable/blind_spot" />
+    <ImageView
+        android:id="@+id/focalPoint"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="50dp"
+        android:src="@drawable/roundbutton" />
 </FrameLayout>

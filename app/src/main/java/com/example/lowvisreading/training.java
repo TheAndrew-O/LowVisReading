@@ -17,14 +17,18 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -47,7 +51,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class training extends AppCompatActivity {
     FloatingActionButton picture_button;
     SeekBar textSize;
     SeekBar blindSpotSize;
@@ -57,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
     TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
     ImageButton flip_screen;
     ImageButton draw_spot;
-//    ImageButton train_but;
     ScrollView scrollView;
     private static final int extra_space = 50;
     private static final int REQUEST_CAMERA_CODE = 100;
@@ -68,14 +71,18 @@ public class MainActivity extends AppCompatActivity {
 
     private String[] cameraPermissions;
     private String[] storagePermissions;
+    private String[] words;
 
     private String custom_scotoma = null;
+    private String screen_text;
+    private SpannableString spannableString;
     private int max_scotoma_size = 900;
+    private int curr_word_index = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_training);
         // Initialize screen components
         picture_button = findViewById(R.id.takePicture);
         textSize = findViewById(R.id.textSize);
@@ -85,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
         flip_screen = findViewById(R.id.flipUp);
         draw_spot = findViewById(R.id.draw_blind_spot);
         scrollView = findViewById(R.id.textScrollView);
-//        train_but = findViewById(R.id.training);
         Bundle extras = getIntent().getExtras();
 
         // Set permissions
@@ -93,8 +99,8 @@ public class MainActivity extends AppCompatActivity {
         storagePermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
         // Ask Permissions when launch app
-        if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{
+        if(ContextCompat.checkSelfPermission(training.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(training.this, new String[]{
                     Manifest.permission.CAMERA
             }, REQUEST_CAMERA_CODE);
         }
@@ -107,8 +113,11 @@ public class MainActivity extends AppCompatActivity {
                 ImageView blindSpotOverlay = findViewById(R.id.blindSpot);
                 blindSpotOverlay.setImageBitmap(bitmap);
                 float text_Size = extras.getFloat("text_size", 22);
-                text_data.setTextSize(TypedValue.COMPLEX_UNIT_PX, text_Size);
-                text_data.setText(extras.getString("text", ""));
+                text_data.setTextSize(70);
+//                text_data.setText(extras.getString("text", ""));
+                screen_text = extras.getString("text", "");
+                spannableString = new SpannableString(extras.getString("text", ""));
+                words = extras.getString("text", "").split("\\s+");
                 ViewGroup.LayoutParams params = blindSpot.getLayoutParams();
                 int blindSize = extras.getInt("blind_size", 100);
                 params.width = blindSize;
@@ -126,8 +135,16 @@ public class MainActivity extends AppCompatActivity {
         // check if activity was given extras
         if(extras != null){
             float text_Size = extras.getFloat("text_size", 22);
-            text_data.setTextSize(TypedValue.COMPLEX_UNIT_PX, text_Size);
-            text_data.setText(extras.getString("text", ""));
+            text_data.setTextSize(70);
+//            text_data.setText(extras.getString("text", ""));
+            screen_text = extras.getString("text", "");
+            spannableString = new SpannableString(extras.getString("text", ""));
+            words = extras.getString("text", "").split("\\s+");
+            StringBuilder formatText = new StringBuilder();
+            for(String word : words){
+                formatText.append(word).append("\n");
+            }
+            text_data.setText(formatText.toString().trim());
             ViewGroup.LayoutParams params = blindSpot.getLayoutParams();
             int blindSize = extras.getInt("blind_size", 100);
             params.width = blindSize;
@@ -149,17 +166,7 @@ public class MainActivity extends AppCompatActivity {
         picture_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, camera_view.class);
-                ViewGroup.LayoutParams params = blindSpot.getLayoutParams();
-                intent.putExtra("blind_size", params.width);
-                intent.putExtra("text_size", text_data.getTextSize());
-                intent.putExtra("text_size_prog", textSize.getProgress());
-                intent.putExtra("blind_size_prog", blindSpotSize.getProgress());
-                if(custom_scotoma != null){
-                    intent.putExtra("blind_spot_path",custom_scotoma);
-                }
-                startActivity(intent);
-                //takePicture();
+                takePicture();
             }
         });
 
@@ -215,7 +222,7 @@ public class MainActivity extends AppCompatActivity {
         flip_screen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, flipped.class);
+                Intent intent = new Intent(training.this, flipped.class);
                 intent.putExtra("text",text_data.getText().toString());
                 ViewGroup.LayoutParams params = blindSpot.getLayoutParams();
                 intent.putExtra("blind_size", params.width);
@@ -230,35 +237,67 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        train_but.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(MainActivity.this, training.class);
-//                intent.putExtra("text",text_data.getText().toString());
-//                ViewGroup.LayoutParams params = blindSpot.getLayoutParams();
-//                intent.putExtra("blind_size", params.width);
-//                intent.putExtra("text_size", text_data.getTextSize());
-//                intent.putExtra("text_size_prog", textSize.getProgress());
-//                intent.putExtra("blind_size_prog", blindSpotSize.getProgress());
-//                if(custom_scotoma != null){
-//                    intent.putExtra("blind_spot_path",custom_scotoma);
-//                    intent.putExtra("max_size",1000);
-//                }
-//                startActivity(intent);
-//            }
-//        });
-
         draw_spot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, draw_blindSpot.class);
+                Intent intent = new Intent(training.this, draw_blindSpot.class);
                 ViewGroup.LayoutParams params = blindSpot.getLayoutParams();
                 intent.putExtra("blind_size", params.width);
                 max_scotoma_size = 1000;
                 startActivityForResult(intent, DRAW_REQUEST_CODE);
             }
         });
+
+        scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+                int scrollY = scrollView.getScrollY(); // For vertical scroll
+                int lineHeight = text_data.getLineHeight();
+                int currentLine = scrollY / lineHeight;
+                // Assuming each line has one word for simplicity, adjust logic based on your actual text layout
+                curr_word_index = currentLine;
+                highlightWord(currentLine);
+            }
+        });
     }
+
+    void highlightWord(int wordIndex) {
+        if (wordIndex >= 0 && wordIndex < words.length) {
+            int start = screen_text.indexOf(words[wordIndex]);
+            int end = start + words[wordIndex].length();
+            if (start != -1 && end <= spannableString.length()) {
+                spannableString.setSpan(new ForegroundColorSpan(Color.TRANSPARENT), 0, spannableString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE); // Clear old highlights
+                spannableString.setSpan(new ForegroundColorSpan(Color.BLUE), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE); // Highlight new word
+                text_data.setText(spannableString);
+
+                // Ensure the layout is ready
+                if (text_data.getLayout() != null) {
+                    int line = text_data.getLayout().getLineForOffset(start);
+                    int yCoordinate = text_data.getLayout().getLineTop(line);
+                    int blindSpotTop = 50;  // Adjust this value based on your layout specifics
+                    int scrollY = yCoordinate - blindSpotTop;
+
+                    scrollView.post(() -> scrollView.scrollTo(0, scrollY));
+                } else {
+                    // Layout is not ready, set a listener to wait for the global layout before scrolling
+                    text_data.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+                            // Ensure we remove this listener once it's fired to avoid multiple triggers
+                            text_data.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                            int line = text_data.getLayout().getLineForOffset(start);
+                            int yCoordinate = text_data.getLayout().getLineTop(line);
+                            int scrollY = yCoordinate - 50;
+
+                            scrollView.post(() -> scrollView.scrollTo(0, scrollY));
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -267,7 +306,6 @@ public class MainActivity extends AppCompatActivity {
             String path = data.getStringExtra("blind_spot_path");
             int dim = data.getIntExtra("blind_size", 100);
             if (path != null) {
-                custom_scotoma = path;
                 Bitmap bitmap = BitmapFactory.decodeFile(path);
                 blindSpot.setImageBitmap(bitmap);
 
@@ -281,7 +319,7 @@ public class MainActivity extends AppCompatActivity {
                 flip_screen.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(MainActivity.this, flipped.class);
+                        Intent intent = new Intent(training.this, flipped.class);
                         intent.putExtra("text", text_data.getText().toString());
                         ViewGroup.LayoutParams params = blindSpot.getLayoutParams();
                         intent.putExtra("blind_size", params.width);
@@ -311,7 +349,7 @@ public class MainActivity extends AppCompatActivity {
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(MainActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(training.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -341,7 +379,7 @@ public class MainActivity extends AppCompatActivity {
                         recognizeText();
                     }
                     else{
-                        Toast.makeText(MainActivity.this, "Cancelled", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(training.this, "Cancelled", Toast.LENGTH_SHORT).show();
                     }
                 }
             }

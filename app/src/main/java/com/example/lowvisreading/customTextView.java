@@ -2,84 +2,79 @@ package com.example.lowvisreading;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.AttributeSet;
-import android.widget.TextView;
+import android.view.View;
 
-import androidx.annotation.Nullable;
+public class customTextView extends View {
+    private String text = "LOREM IPSUM DOLOR SIT AMET, CONSECTETUR ADIPISCING ELIT, SED DO EIUSMOD TEMPOR INCIDIDUNT UT LABORE ET DOLORE MAGNA ALIQUA. UT ENIM AD MINIM VENIAM, QUIS NOSTRUD EXERCITATION ULLAMCO LABORIS NISI UT ALIQUIP EX EA COMMODO CONSEQUAT. DUIS AUTE IRURE DOLOR IN REPREHENDERIT IN VOLUPTATE VELIT ESSE CILLUM DOLORE EU FUGIAT NULLA PARIATUR. EXCEPTEUR SINT OCCAECAT CUPIDATAT NON PROIDENT, SUNT IN CULPA QUI OFFICIA DESERUNT MOLLIT ANIM ID EST LABORUM."; // Ideally, set this through XML or a setter method.
+    private TextPaint textPaint;
+    private Paint textPaint_;
+    private RectF blindSpotRect;
+    private int textSize = 22;
 
-public class customTextView extends androidx.appcompat.widget.AppCompatTextView{
 
-    private Path blindSpotPath;
-    private float blindSpotRadius;
-    private float blindSpotX;
-    private float blindSpotY;
-
-    public customTextView(Context context, @Nullable AttributeSet attrs) {
+    public customTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
-    }
-
-    public void setBlindSpot(float x, float y, float radius) {
-        this.blindSpotX = x;
-        this.blindSpotY = y;
-        this.blindSpotRadius = radius;
-        invalidate();
+        textPaint_.setColor(Color.BLACK);
+        textPaint_.setTextSize(70);
+        blindSpotRect = new RectF(100, 100, 300, 300);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        TextPaint textPaint = getPaint();
-        textPaint.setColor(getCurrentTextColor());
-        textPaint.drawableState = getDrawableState();
+        super.onDraw(canvas);
+        drawTextAroundBlindSpot(canvas);
+    }
 
-        blindSpotPath = new Path();
-        // Create a circle path that the text will wrap around
-        blindSpotPath.addCircle(blindSpotX, blindSpotY, blindSpotRadius, Path.Direction.CW);
-
-        String text = getText().toString();
-        int width = getWidth() - getPaddingLeft() - getPaddingRight();
-
-        StaticLayout layout = new StaticLayout(text, textPaint, width,
-                Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
-
+    private void drawTextAroundBlindSpot(Canvas canvas) {
+        int width = getWidth();
+        StaticLayout layout = new StaticLayout(text, textPaint, width, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
         int lineCount = layout.getLineCount();
-        float lineTop = 0;
-        float lineBottom = layout.getLineBottom(0);
+        float textY = 0;
 
         for (int i = 0; i < lineCount; i++) {
-            float lineStart = layout.getLineLeft(i);
-            float lineEnd = layout.getLineRight(i);
-            String lineText = text.substring(layout.getLineStart(i), layout.getLineEnd(i));
+            int lineStart = layout.getLineStart(i);
+            int lineEnd = layout.getLineEnd(i);
+            String lineText = text.substring(lineStart, lineEnd);
 
-            if (lineBottom > blindSpotY - blindSpotRadius && lineTop < blindSpotY + blindSpotRadius) {
-                // The line intersects the blind spot, break it
-                String[] words = lineText.split("\\s");
-                StringBuilder leftSide = new StringBuilder();
-                StringBuilder rightSide = new StringBuilder();
-                boolean pastBlindSpot = false;
-                for (String word : words) {
-                    float wordWidth = textPaint.measureText(word + " ");
-                    if (!pastBlindSpot && lineStart + wordWidth < blindSpotX - blindSpotRadius) {
-                        leftSide.append(word).append(" ");
-                    } else {
-                        pastBlindSpot = true;
-                        rightSide.append(word).append(" ");
-                    }
-                    lineStart += wordWidth;
-                }
-                // Draw the left and right side of the line separately
-                canvas.drawText(leftSide.toString(), getPaddingLeft(), lineTop, textPaint);
-                canvas.drawText(rightSide.toString(), blindSpotX + blindSpotRadius, lineTop, textPaint);
+            float textWidth = textPaint.measureText(lineText);
+            float textX = (getWidth() - textWidth) / 2; // Center text horizontally
+
+            if (textY + textPaint.getTextSize() > blindSpotRect.top && textY < blindSpotRect.bottom) {
+                // The line is within the vertical bounds of the blind spot
+                // Calculate new positions to break the text and draw it on either side of the blind spot
+                float rightTextWidth = textWidth - blindSpotRect.right;
+                canvas.drawText(lineText, 0, (int) (lineStart + (blindSpotRect.left - textX) / textPaint.getTextSize()), textX, textY, textPaint);
+                canvas.drawText(lineText, (int) (lineStart + (blindSpotRect.right - textX) / textPaint.getTextSize()), lineEnd, blindSpotRect.right, textY, textPaint);
             } else {
-                // Draw the line normally
-                canvas.drawText(lineText, getPaddingLeft(), lineTop, textPaint);
+                // Draw normally
+                canvas.drawText(lineText, textX, textY, textPaint);
             }
-            lineTop = lineBottom;
-            lineBottom += layout.getLineBottom(i + 1) - layout.getLineBottom(i);
+
+            textY += textPaint.getTextSize() + 10; // Move to next line, add line spacing
         }
+    }
+    public void setText(String text){
+        this.text = text;
+    }
+
+    public void setTextSize(int size){
+        textSize = size;
+        textPaint.setTextSize(textSize);
+    }
+
+    public String getText(){
+        return text;
+    }
+
+    public int getTextSize(){
+        return textSize;
     }
 }
