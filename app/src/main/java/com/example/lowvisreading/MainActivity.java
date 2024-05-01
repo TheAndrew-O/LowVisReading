@@ -264,6 +264,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // When drawing activity is completed, get results and displaay new blind spot
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

@@ -50,12 +50,12 @@ public class bottom_sheet extends BottomSheetDialogFragment{
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                // You can also implement this if needed
+
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                // You can also implement this if needed
+
             }
         });
 
@@ -69,12 +69,12 @@ public class bottom_sheet extends BottomSheetDialogFragment{
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                // You can also implement this if needed
+
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                // You can also implement this if needed
+
             }
         });
 

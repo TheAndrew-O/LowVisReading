@@ -113,13 +113,13 @@ public class camera_view extends AppCompatActivity implements bottom_sheet.Botto
                 blindSpot.setImageBitmap(bitmap);
             }
         }
-
+        // CAMERAA PERMISSIONS
         if(ContextCompat.checkSelfPermission(camera_view.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(camera_view.this, new String[]{
                     Manifest.permission.CAMERA
             }, REQUEST_CAMERA_CODE);
         }
-
+        // Create instance of CameraX
         cameraProviderListenableFuture = ProcessCameraProvider.getInstance(this);
         cameraProviderListenableFuture.addListener(() -> {
             try{
@@ -205,7 +205,7 @@ public class camera_view extends AppCompatActivity implements bottom_sheet.Botto
             bottomSheet.show(getSupportFragmentManager(), "BottomSheetTag");
         });
     }
-
+    // Turn ON/OFF curved text mode
     private void toggleTextDisplay() {
         if (curved_text.getVisibility() == View.GONE) {
             curve_toggle.setBackgroundColor(Color.RED);
@@ -223,13 +223,13 @@ public class camera_view extends AppCompatActivity implements bottom_sheet.Botto
             scrollView.setVisibility(View.VISIBLE);
         }
     }
-
+    // Update text size
     @Override
     public void onTextSizeChanged(int textSize) {
         curved_text.setTextSize(textSize);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
     }
-
+    // Update blind spot size and redefine boundary box for blind spot
     @Override
     public void onBlindSpotSizeChanged(int blindSpotSize) {
         ViewGroup.LayoutParams params = blindSpot.getLayoutParams();
@@ -271,7 +271,7 @@ public class camera_view extends AppCompatActivity implements bottom_sheet.Botto
                     }
                 });
     }
-
+    // If live text detection is on, call text recognizer on bitmap image. Wait 3 seconds before analyzing image again
     private void turnOnTextRec(){
         if(!featureOn){
             featureOn = true;
@@ -347,7 +347,7 @@ public class camera_view extends AppCompatActivity implements bottom_sheet.Botto
             Toast.makeText(this, "Failed image processing: "+e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
-
+    // Send recognized text baack to main screen
     private void detectText() {
         try {
             InputImage inputImage = InputImage.fromBitmap(bitmap, 0);

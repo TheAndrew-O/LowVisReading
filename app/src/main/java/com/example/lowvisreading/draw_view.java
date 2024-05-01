@@ -69,7 +69,8 @@ public class draw_view extends View {
             canvas.drawPath(draw_path, draw_paint); // Draw the path with the stroke paint
         }
     }
-
+    // If user is drawing, track points and if not closed shape, connect the first/last point.
+    // Also track the boundary of the drawn image for cropping
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         float touchX = event.getX();
@@ -95,7 +96,7 @@ public class draw_view extends View {
                 float centerY = (minY + maxY) / 2;
                 float radius = Math.max(maxX - minX, maxY - minY) / 2; // Maximum distance from center to edges
 
-                // Configure the RadialGradient
+                // Configure the RadialGradient shader
                 RadialGradient gradient = new RadialGradient(centerX, centerY, radius, new int[] {Color.BLACK, Color.argb(175,0,0,0)}, null, Shader.TileMode.CLAMP);
                 fill_paint.setShader(gradient);
                 draw_canvas.drawPath(draw_path, fill_paint);
