@@ -18,6 +18,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -52,380 +53,54 @@ import java.net.URI;
 import java.util.Locale;
 
 public class training extends AppCompatActivity {
-    FloatingActionButton picture_button;
-    SeekBar textSize;
-    SeekBar blindSpotSize;
-    TextView text_data;
+
+    customTextView cs;
     ImageView blindSpot;
-    Bitmap bitmap;
-    TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
-    ImageButton flip_screen;
-    ImageButton draw_spot;
-    ScrollView scrollView;
-    private static final int extra_space = 50;
-    private static final int REQUEST_CAMERA_CODE = 100;
-    private static final int REQUEST_STORAGE_CODE = 101;
-    private static final int DRAW_REQUEST_CODE = 102;
-
-    private Uri imageURI = null;
-
-    private String[] cameraPermissions;
-    private String[] storagePermissions;
-    private String[] words;
-
-    private String custom_scotoma = null;
-    private String screen_text;
-    private SpannableString spannableString;
-    private int max_scotoma_size = 900;
-    private int curr_word_index = 0;
+    String txt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_training);
-        // Initialize screen components
-        picture_button = findViewById(R.id.takePicture);
-        textSize = findViewById(R.id.textSize);
-        blindSpotSize = findViewById(R.id.blindSpotSize);
-        text_data = findViewById(R.id.textDisplay);
-        blindSpot = findViewById(R.id.blindSpot);
-        flip_screen = findViewById(R.id.flipUp);
-        draw_spot = findViewById(R.id.draw_blind_spot);
-        scrollView = findViewById(R.id.textScrollView);
         Bundle extras = getIntent().getExtras();
+        cs = findViewById(R.id.curvedTextView);
+        blindSpot = findViewById(R.id.blindSpot);
+        RectF rect = getBlindSpotBoundary();
 
-        // Set permissions
-        cameraPermissions = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
-        storagePermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
-
-        // Ask Permissions when launch app
-        if(ContextCompat.checkSelfPermission(training.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(training.this, new String[]{
-                    Manifest.permission.CAMERA
-            }, REQUEST_CAMERA_CODE);
-        }
-        // if screen was previously flipped
-        Intent change_scotoma_intent = getIntent();
-        if(change_scotoma_intent != null){
-            String path = change_scotoma_intent.getStringExtra("blind_spot_path");
-            if(path != null){
-                Bitmap bitmap = BitmapFactory.decodeFile(path);
-                ImageView blindSpotOverlay = findViewById(R.id.blindSpot);
-                blindSpotOverlay.setImageBitmap(bitmap);
-                float text_Size = extras.getFloat("text_size", 22);
-                text_data.setTextSize(70);
-//                text_data.setText(extras.getString("text", ""));
-                screen_text = extras.getString("text", "");
-                spannableString = new SpannableString(extras.getString("text", ""));
-                words = extras.getString("text", "").split("\\s+");
-                ViewGroup.LayoutParams params = blindSpot.getLayoutParams();
-                int blindSize = extras.getInt("blind_size", 100);
-                params.width = blindSize;
-                params.height = blindSize;
-                blindSpot.setLayoutParams(params);
-                int textSizeProgress = extras.getInt("text_size_prog", 0);
-                textSize.setProgress(textSizeProgress);
-                int blindSizeProgress = extras.getInt("blind_size_prog", 0);
-                blindSpotSize.setProgress(blindSizeProgress);
-                custom_scotoma = path;
-                max_scotoma_size = 1000;
-            }
-        }
-
-        // check if activity was given extras
         if(extras != null){
-            float text_Size = extras.getFloat("text_size", 22);
-            text_data.setTextSize(70);
-//            text_data.setText(extras.getString("text", ""));
-            screen_text = extras.getString("text", "");
-            spannableString = new SpannableString(extras.getString("text", ""));
-            words = extras.getString("text", "").split("\\s+");
-            StringBuilder formatText = new StringBuilder();
-            for(String word : words){
-                formatText.append(word).append("\n");
-            }
-            text_data.setText(formatText.toString().trim());
+            txt = extras.getString("text", "FUCK  ET DOLORE MAGNA ALIQUA. UT ENIM AD MINIM VENIAM, QUIS NOSTRUD EXERCITATION ULLAMCO LABORIS NISI UT ALIQUIP EX EA COMMODO CONSEQUAT. DUIS AUTE IRURE DOLOR IN REPREHENDERIT IN VOLUPTATE VELIT ESSE CILLUM DOLORE EU FUGIAT NULLA PARIATUR. EXCEPTEUR SINT OCCAECAT CUPIDATAT NON PROIDENT, SUNT IN CULPA QUI OFFICIA DESERUNT MOLLIT ANIM ID EST LABORUM.");
             ViewGroup.LayoutParams params = blindSpot.getLayoutParams();
             int blindSize = extras.getInt("blind_size", 100);
             params.width = blindSize;
             params.height = blindSize;
             blindSpot.setLayoutParams(params);
-            int textSizeProgress = extras.getInt("text_size_prog", 0);
-            textSize.setProgress(textSizeProgress);
-            int blindSizeProgress = extras.getInt("blind_size_prog", 0);
-            blindSpotSize.setProgress(blindSizeProgress);
-            max_scotoma_size = extras.getInt("max_size", 900);
+            cs.setString(txt);
+            int d = extras.getInt("left", 2);
+            int c = extras.getInt("top",3);
+            cs.setBoundary(new RectF((float)d, (float)c, (float)(d + blindSize), (float)(c + blindSize)));
+//            Toast.makeText(this, d + "-" + c + "-"+ String.valueOf(d + blindSize)+ "-" + String.valueOf(c + blindSize), Toast.LENGTH_SHORT).show();
             String path = extras.getString("blind_spot_path","");
             if(!path.equals("")){
                 Bitmap bitmap = BitmapFactory.decodeFile(path);
                 blindSpot.setImageBitmap(bitmap);
             }
         }
-
-        // take picture
-        picture_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                takePicture();
-            }
-        });
-
-        // Change Text size
-        textSize.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                int min = 8;
-                int max = 70;
-                int text_size = min + (max - min) * i / seekBar.getMax();
-                text_data.setTextSize(text_size);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-        // change blind spot size
-        blindSpotSize.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                int min = 100;
-                int max = max_scotoma_size;
-                int blind_size = min + (max - min) * i / seekBar.getMax();
-                ViewGroup.LayoutParams params = blindSpot.getLayoutParams();
-                params.width = blind_size;
-                params.height = blind_size;
-                blindSpot.setLayoutParams(params);
-
-                int text_pad = blind_size + extra_space;
-                text_data.setPadding(text_data.getPaddingLeft(), text_data.getPaddingTop(), text_data.getPaddingRight(), text_pad);
-                text_data.requestLayout();
-
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-        // Flip the screen
-        flip_screen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(training.this, flipped.class);
-                intent.putExtra("text",text_data.getText().toString());
-                ViewGroup.LayoutParams params = blindSpot.getLayoutParams();
-                intent.putExtra("blind_size", params.width);
-                intent.putExtra("text_size", text_data.getTextSize());
-                intent.putExtra("text_size_prog", textSize.getProgress());
-                intent.putExtra("blind_size_prog", blindSpotSize.getProgress());
-                if(custom_scotoma != null){
-                    intent.putExtra("blind_spot_path",custom_scotoma);
-                    intent.putExtra("max_size",1000);
-                }
-                startActivity(intent);
-            }
-        });
-
-        draw_spot.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(training.this, draw_blindSpot.class);
-                ViewGroup.LayoutParams params = blindSpot.getLayoutParams();
-                intent.putExtra("blind_size", params.width);
-                max_scotoma_size = 1000;
-                startActivityForResult(intent, DRAW_REQUEST_CODE);
-            }
-        });
-
-        scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-            @Override
-            public void onScrollChanged() {
-                int scrollY = scrollView.getScrollY(); // For vertical scroll
-                int lineHeight = text_data.getLineHeight();
-                int currentLine = scrollY / lineHeight;
-                // Assuming each line has one word for simplicity, adjust logic based on your actual text layout
-                curr_word_index = currentLine;
-                highlightWord(currentLine);
-            }
-        });
-    }
-
-    void highlightWord(int wordIndex) {
-        if (wordIndex >= 0 && wordIndex < words.length) {
-            int start = screen_text.indexOf(words[wordIndex]);
-            int end = start + words[wordIndex].length();
-            if (start != -1 && end <= spannableString.length()) {
-                spannableString.setSpan(new ForegroundColorSpan(Color.TRANSPARENT), 0, spannableString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE); // Clear old highlights
-                spannableString.setSpan(new ForegroundColorSpan(Color.BLUE), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE); // Highlight new word
-                text_data.setText(spannableString);
-
-                // Ensure the layout is ready
-                if (text_data.getLayout() != null) {
-                    int line = text_data.getLayout().getLineForOffset(start);
-                    int yCoordinate = text_data.getLayout().getLineTop(line);
-                    int blindSpotTop = 50;  // Adjust this value based on your layout specifics
-                    int scrollY = yCoordinate - blindSpotTop;
-
-                    scrollView.post(() -> scrollView.scrollTo(0, scrollY));
-                } else {
-                    // Layout is not ready, set a listener to wait for the global layout before scrolling
-                    text_data.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                        @Override
-                        public void onGlobalLayout() {
-                            // Ensure we remove this listener once it's fired to avoid multiple triggers
-                            text_data.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                            int line = text_data.getLayout().getLineForOffset(start);
-                            int yCoordinate = text_data.getLayout().getLineTop(line);
-                            int scrollY = yCoordinate - 50;
-
-                            scrollView.post(() -> scrollView.scrollTo(0, scrollY));
-                        }
-                    });
-                }
-            }
+        else{
+            txt = "";
         }
+//        cs.setUp(rect.left, rect.top, rect.right, rect.bottom, txt);
     }
 
+    private RectF getBlindSpotBoundary(){
+        int[] loc = new int[2];
+        blindSpot.getLocationOnScreen(loc);
 
+        float left = loc[0];
+        float top = loc[1];
+        float right = left + blindSpot.getWidth();
+        float bottom = top + blindSpot.getHeight();
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == DRAW_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
-            String path = data.getStringExtra("blind_spot_path");
-            int dim = data.getIntExtra("blind_size", 100);
-            if (path != null) {
-                Bitmap bitmap = BitmapFactory.decodeFile(path);
-                blindSpot.setImageBitmap(bitmap);
-
-                ViewGroup.LayoutParams params = blindSpot.getLayoutParams();
-                params.width = dim;
-                params.height = dim;
-                blindSpot.setLayoutParams(params);
-
-                // Log.w("WEEEEEEEEEEEEEE", Integer.toString(dim));
-
-                flip_screen.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(training.this, flipped.class);
-                        intent.putExtra("text", text_data.getText().toString());
-                        ViewGroup.LayoutParams params = blindSpot.getLayoutParams();
-                        intent.putExtra("blind_size", params.width);
-                        intent.putExtra("text_size", text_data.getTextSize());
-                        intent.putExtra("text_size_prog", textSize.getProgress());
-                        intent.putExtra("blind_size_prog", blindSpotSize.getProgress());
-
-                        intent.putExtra("blind_spot_path", path);
-
-                        startActivity(intent);
-                    }
-                });
-            }
-        }
-    }
-    // Get text from Image
-    private void recognizeText() {
-        try {
-            InputImage inputImage = InputImage.fromBitmap(bitmap, 0);
-            Task<Text> textTaskRes = recognizer.process(inputImage).addOnSuccessListener(new OnSuccessListener<Text>() {
-                @Override
-                public void onSuccess(Text text) {
-                    String result = text.getText();
-                    Log.i("TEXT", result);
-                    text_data.setText(result.toUpperCase());
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(training.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Failed image processing: "+e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
+        return new RectF(left, top, right, bottom);
     }
 
-    // Picture Activity
-    private void takePicture() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            cameraActivityResultLaunch.launch(intent);
-        }
-    }
-
-    // Get bitmap file of image taken, then call recognize text
-    private ActivityResultLauncher<Intent> cameraActivityResultLaunch = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if (result.getResultCode() == Activity.RESULT_OK){
-                        Bundle extras = result.getData().getExtras();
-                        bitmap = (Bitmap) extras.get("data");
-                        recognizeText();
-                    }
-                    else{
-                        Toast.makeText(training.this, "Cancelled", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-    );
-
-    private boolean checkStoragePermission(){
-        boolean res = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
-        return res;
-    }
-
-    private void requestStoragePermissions(){
-        ActivityCompat.requestPermissions(this, storagePermissions, REQUEST_STORAGE_CODE);
-    }
-
-    private boolean checkCameraPermissions(){
-        boolean camRes = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == (PackageManager.PERMISSION_GRANTED);
-        boolean storageRes = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
-
-        return camRes && storageRes;
-    }
-
-    private void requestCameraPermissions(){
-        ActivityCompat.requestPermissions(this, cameraPermissions, REQUEST_CAMERA_CODE);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults){
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        switch (requestCode){
-            case REQUEST_CAMERA_CODE:{
-                if (grantResults.length > 0){
-                    boolean cameraAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                    boolean storageAccepted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
-
-                    if(cameraAccepted && storageAccepted){
-                        takePicture();
-                    }
-                    else{
-                        Toast.makeText(this, "Permissions required", Toast.LENGTH_SHORT).show();
-                    }
-                }
-                else{
-                    Toast.makeText(this, "Cancelled Permissions", Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
-    }
 }

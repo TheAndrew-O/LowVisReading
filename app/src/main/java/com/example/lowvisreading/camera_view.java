@@ -20,6 +20,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -49,10 +50,11 @@ import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutionException;
 
-public class camera_view extends AppCompatActivity {
+public class camera_view extends AppCompatActivity implements bottom_sheet.BottomSheetListener {
 
     ImageButton capture;
     ImageButton text_rec;
+    ImageButton curve_toggle;
     SeekBar textSize;
     SeekBar blindSpotSize;
     TextView textView;
@@ -67,6 +69,7 @@ public class camera_view extends AppCompatActivity {
     private static final int REQUEST_CAMERA_CODE = 100;
     private boolean featureOn = false;
     private String custom_scotoma = null;
+    private customTextView curved_text;
     private ListenableFuture<ProcessCameraProvider> cameraProviderListenableFuture;
 
     @Override
@@ -75,14 +78,17 @@ public class camera_view extends AppCompatActivity {
         setContentView(R.layout.activity_camera_view);
 
         capture = findViewById(R.id.capture);
-        textSize = findViewById(R.id.textSize);
-        blindSpotSize = findViewById(R.id.blindSpotSize);
+//        textSize = findViewById(R.id.textSize);
+//        blindSpotSize = findViewById(R.id.blindSpotSize);
         text_rec = findViewById(R.id.text_rec);
         textView = findViewById(R.id.textDisplay);
+        curved_text = findViewById(R.id.curvedTextView);
+        curve_toggle = findViewById(R.id.curved);
         scrollView = findViewById(R.id.scroll);
         previewView = findViewById(R.id.cameraPreView);
         blindSpot = findViewById(R.id.blindSpot);
         Bundle extras = getIntent().getExtras();
+
         // check if activity was given extras
         if(extras != null){
             float text_Size = extras.getFloat("text_size", 22);
@@ -93,10 +99,13 @@ public class camera_view extends AppCompatActivity {
             params.width = blindSize;
             params.height = blindSize;
             blindSpot.setLayoutParams(params);
-            int textSizeProgress = extras.getInt("text_size_prog", 0);
-            textSize.setProgress(textSizeProgress);
-            int blindSizeProgress = extras.getInt("blind_size_prog", 0);
-            blindSpotSize.setProgress(blindSizeProgress);
+            int left  = extras.getInt("left", 100);
+            int  top = extras.getInt("top", 100);
+            curved_text.setBoundary(new RectF((float)left, (float)top, (float)(left + blindSize), (float)(top + blindSize)));
+//            int textSizeProgress = extras.getInt("text_size_prog", 0);
+//            textSize.setProgress(textSizeProgress);
+//            int blindSizeProgress = extras.getInt("blind_size_prog", 0);
+//            blindSpotSize.setProgress(blindSizeProgress);
             String path = extras.getString("blind_spot_path","");
             if(!path.equals("")){
                 custom_scotoma = path;
@@ -123,6 +132,12 @@ public class camera_view extends AppCompatActivity {
             }
         }, getMainExecutor());
 
+        curve_toggle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toggleTextDisplay();
+            }
+        });
         capture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -137,53 +152,92 @@ public class camera_view extends AppCompatActivity {
         });
 
         // Change Text size
-        textSize.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                int min = 8;
-                int max = 70;
-                int text_size = min + (max - min) * i / seekBar.getMax();
-                textView.setTextSize(text_size);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
+//        textSize.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+//            @Override
+//            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+//                int min = 8;
+//                int max = 70;
+//                int text_size = min + (max - min) * i / seekBar.getMax();
+//                textView.setTextSize(text_size);
+//            }
+//
+//            @Override
+//            public void onStartTrackingTouch(SeekBar seekBar) {
+//
+//            }
+//
+//            @Override
+//            public void onStopTrackingTouch(SeekBar seekBar) {
+//
+//            }
+//        });
+//        // change blind spot size
+//        blindSpotSize.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+//            @Override
+//            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+//                int min = 100;
+//                int max = 900;
+//                int blind_size = min + (max - min) * i / seekBar.getMax();
+//                ViewGroup.LayoutParams params = blindSpot.getLayoutParams();
+//                params.width = blind_size;
+//                params.height = blind_size;
+//                blindSpot.setLayoutParams(params);
+//
+//                int text_pad = blind_size + 40;
+//                textView.setPadding(textView.getPaddingLeft(), textView.getPaddingTop(), textView.getPaddingRight(), text_pad);
+//                textView.requestLayout();
+//
+//            }
+//
+//            @Override
+//            public void onStartTrackingTouch(SeekBar seekBar) {
+//
+//            }
+//
+//            @Override
+//            public void onStopTrackingTouch(SeekBar seekBar) {
+//
+//            }
+//        });
+        findViewById(R.id.bottom_nav).setOnClickListener(view -> {
+            bottom_sheet bottomSheet = new bottom_sheet();
+            bottomSheet.setBottomSheetListener(this);
+            bottomSheet.show(getSupportFragmentManager(), "BottomSheetTag");
         });
-        // change blind spot size
-        blindSpotSize.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                int min = 100;
-                int max = 900;
-                int blind_size = min + (max - min) * i / seekBar.getMax();
-                ViewGroup.LayoutParams params = blindSpot.getLayoutParams();
-                params.width = blind_size;
-                params.height = blind_size;
-                blindSpot.setLayoutParams(params);
+    }
 
-                int text_pad = blind_size + 40;
-                textView.setPadding(textView.getPaddingLeft(), textView.getPaddingTop(), textView.getPaddingRight(), text_pad);
-                textView.requestLayout();
-
+    private void toggleTextDisplay() {
+        if (curved_text.getVisibility() == View.GONE) {
+            curve_toggle.setBackgroundColor(Color.RED);
+            String text = textView.getText().toString();
+            if(text.isEmpty() ||  text == null){
+                turnOnTextRec();
             }
+            curved_text.setString(text);
+            curved_text.setVisibility(View.VISIBLE);
+            scrollView.setVisibility(View.GONE);
+        } else {
+            // Show regularTextView and hide customTextView
+            curve_toggle.setBackgroundResource(0);
+            curved_text.setVisibility(View.GONE);
+            scrollView.setVisibility(View.VISIBLE);
+        }
+    }
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
+    @Override
+    public void onTextSizeChanged(int textSize) {
+        curved_text.setTextSize(textSize);
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+    }
 
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
+    @Override
+    public void onBlindSpotSizeChanged(int blindSpotSize) {
+        ViewGroup.LayoutParams params = blindSpot.getLayoutParams();
+        params.width = blindSpotSize;
+        params.height = blindSpotSize;
+        blindSpot.setLayoutParams(params);
+        RectF rect = getBlindSpotBoundary();
+        curved_text.setBoundary(rect);
     }
 
     private void startCameraX(ProcessCameraProvider cameraProvider) {
@@ -232,11 +286,16 @@ public class camera_view extends AppCompatActivity {
                             long currTime = System.currentTimeMillis();
                             String res = text.getText();
                             Spannable str = Spannable.Factory.getInstance().newSpannable(res.toUpperCase());
-                            str.setSpan(new BackgroundColorSpan(Color.BLACK), 0, res.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            str.setSpan(new BackgroundColorSpan(Color.argb(175,0,0,0)), 0, res.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                             if(currTime - lastAnalyzedTimeStamps[0] >= 3000)
                             {
                                 lastAnalyzedTimeStamps[0] = currTime;
-                                runOnUiThread(() -> textView.setText(str));
+                                if(scrollView.getVisibility() == View.VISIBLE) {
+                                    runOnUiThread(() -> textView.setText(str));
+                                }
+                                else{
+                                    runOnUiThread(() -> curved_text.setString(res.toUpperCase()));
+                                }
                             }
                             image.close();
                         }
@@ -273,7 +332,7 @@ public class camera_view extends AppCompatActivity {
                     String result = text.getText();
                     Log.i("TEXT", result);
                     Spannable str = Spannable.Factory.getInstance().newSpannable(result.toUpperCase());
-                    str.setSpan(new BackgroundColorSpan(Color.BLACK), 0, result.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    str.setSpan(new BackgroundColorSpan(Color.argb(175,0,0,0)), 0, result.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                     runOnUiThread(() -> textView.setText(str));
                 }
             }).addOnFailureListener(new OnFailureListener() {
@@ -301,6 +360,8 @@ public class camera_view extends AppCompatActivity {
                     ViewGroup.LayoutParams params = blindSpot.getLayoutParams();
                     intent.putExtra("blind_size", params.width);
                     intent.putExtra("text_size", textView.getTextSize());
+//                    intent.putExtra("text_size_prog", textSize.getProgress());
+//                    intent.putExtra("blind_size_prog", blindSpotSize.getProgress());
                     if(custom_scotoma != null){
                         intent.putExtra("blind_spot_path",custom_scotoma);
                         intent.putExtra("max_size",1000);
@@ -320,4 +381,20 @@ public class camera_view extends AppCompatActivity {
         }
     }
 
+    private RectF getBlindSpotBoundary(){
+        int[] loc = new int[2];
+        blindSpot.getLocationOnScreen(loc);
+
+        float left = loc[0];
+        float top = loc[1];
+        float right = left + blindSpot.getWidth();
+        float bottom = top + blindSpot.getHeight();
+
+        return new RectF(left, top, right, bottom);
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+        super.onPointerCaptureChanged(hasCapture);
+    }
 }

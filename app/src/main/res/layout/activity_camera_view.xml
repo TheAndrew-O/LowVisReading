@@ -11,16 +11,24 @@
         android:id="@+id/cameraPreView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:weightSum="2">
+        <com.example.lowvisreading.customTextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:id="@+id/curvedTextView"
+            android:layout_weight="1.82"
+            android:visibility="gone"/>
         <ScrollView
             android:id="@+id/scroll"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1.42">
+            android:layout_weight="1.82">
             <TextView
                 android:id="@+id/textDisplay"
                 android:layout_width="match_parent"
@@ -35,8 +43,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.58"
-            android:background="#4D000000"
+            android:layout_weight="0.18"
             android:orientation="horizontal">
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -57,43 +64,7 @@
                 android:layout_gravity="bottom"
                 android:gravity="bottom"
                 android:orientation="vertical">
-                <SeekBar
-                    android:id="@+id/textSize"
-                    android:thumb="@drawable/custom_seekbar"
-                    android:progressDrawable="@drawable/seekbar_progress"
-                    android:splitTrack="false"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:labelFor="@id/textSize"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="TEXT SIZE"
-                    android:layout_marginBottom="20dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginRight="20dp"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"/>
-                <SeekBar
-                    android:id="@+id/blindSpotSize"
-                    android:thumb="@drawable/custom_seekbaar2"
-                    android:progressDrawable="@drawable/seekbar_prog2"
-                    android:splitTrack="false"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:layout_marginTop="10dp"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="BLIND SPOT SIZE"
-                    android:layout_marginBottom="100dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginRight="20dp"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"/>
+
             </LinearLayout>
         </LinearLayout>
 
@@ -122,6 +93,27 @@
         android:src="@drawable/baseline_abc_24"
         android:layout_marginBottom="10dp"
         android:scaleType="centerCrop"
+        android:background="?attr/selectableItemBackgroundBorderless"/>
+    <ImageButton
+        android:id="@+id/bottom_nav"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:src="@drawable/baseline_arrow_drop_up_24"
+        android:layout_marginBottom="10dp"
+        android:scaleType="centerCrop"
+        android:background="?attr/selectableItemBackgroundBorderless"/>
+    <ImageButton
+        android:id="@+id/curved"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="bottom|left"
+        android:src="@drawable/baseline_auto_mode_24"
+        android:layout_marginBottom="10dp"
+        android:scaleType="centerCrop"
+        android:rotationX="180"
+        android:rotationY="180"
+        android:padding="5dp"
         android:background="?attr/selectableItemBackgroundBorderless"/>
 
 </FrameLayout>

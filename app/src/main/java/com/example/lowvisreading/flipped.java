@@ -114,7 +114,7 @@ public class flipped extends AppCompatActivity {
                 int blindSizeProgress = extras.getInt("blind_size_prog", 0);
                 blindSpotSize.setProgress(blindSizeProgress);
                 custom_scotoma = path;
-                max_scotoma_size = 1000;
+                max_scotoma_size = 2000;
             }
         }
 
@@ -144,7 +144,20 @@ public class flipped extends AppCompatActivity {
         picture_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                takePicture();
+                Intent intent = new Intent(flipped.this, camera_view.class);
+                ViewGroup.LayoutParams params = blindSpot.getLayoutParams();
+                intent.putExtra("blind_size", params.width);
+                intent.putExtra("text_size", text_data.getTextSize());
+                intent.putExtra("text_size_prog", textSize.getProgress());
+                intent.putExtra("blind_size_prog", blindSpotSize.getProgress());
+                int[] loc = new int[2];
+                blindSpot.getLocationOnScreen(loc);
+                intent.putExtra("left", loc[0]);
+                intent.putExtra("top", loc[1]);
+                if(custom_scotoma != null){
+                    intent.putExtra("blind_spot_path",custom_scotoma);
+                }
+                startActivity(intent);
             }
         });
 
@@ -209,7 +222,7 @@ public class flipped extends AppCompatActivity {
                 intent.putExtra("blind_size_prog", blindSpotSize.getProgress());
                 if(custom_scotoma != null){
                     intent.putExtra("blind_spot_path",custom_scotoma);
-                    intent.putExtra("max_size",1000);
+                    intent.putExtra("max_size",2000);
                 }
                 startActivity(intent);
             }
@@ -221,7 +234,7 @@ public class flipped extends AppCompatActivity {
                 Intent intent = new Intent(flipped.this, draw_blindSpot.class);
                 ViewGroup.LayoutParams params = blindSpot.getLayoutParams();
                 intent.putExtra("blind_size", params.width);
-                max_scotoma_size = 1000;
+                max_scotoma_size = 2000;
                 startActivityForResult(intent, DRAW_REQUEST_CODE);
             }
         });

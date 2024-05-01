@@ -10,6 +10,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
+import android.graphics.RadialGradient;
+import android.graphics.RectF;
+import android.graphics.Shader;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -22,7 +25,7 @@ import java.util.Stack;
 public class draw_view extends View {
 
     private Path draw_path;
-    private Paint draw_paint, canvas_paint;
+    private Paint draw_paint, canvas_paint, fill_paint;
     private Canvas draw_canvas;
     private Bitmap canvas_bitmap;
     private Stack<Path> stack_paths = new Stack<>();
@@ -43,12 +46,17 @@ public class draw_view extends View {
         draw_paint = new Paint();
         draw_path = new Path();
 
-        draw_paint.setColor(Color.BLACK);
+        draw_paint.setColor(Color.RED);
         draw_paint.setAntiAlias(true);
         draw_paint.setStrokeWidth(5);
         draw_paint.setStyle(Paint.Style.STROKE);
         draw_paint.setStrokeJoin(Paint.Join.ROUND);
         draw_paint.setStrokeCap(Paint.Cap.ROUND);
+
+        fill_paint = new Paint();
+//        fill_paint.setColor(Color.BLACK);
+        fill_paint.setAntiAlias(true);
+        fill_paint.setStyle(Paint.Style.FILL);
 
         canvas_paint = new Paint(Paint.DITHER_FLAG);
     }
@@ -56,7 +64,10 @@ public class draw_view extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         canvas.drawBitmap(canvas_bitmap, 0, 0, canvas_paint);
-        canvas.drawPath(draw_path, draw_paint);
+        if (canvas_bitmap != null) {
+            canvas.drawPath(draw_path, fill_paint); // Draw the path with the fill paint
+            canvas.drawPath(draw_path, draw_paint); // Draw the path with the stroke paint
+        }
     }
 
     @Override
@@ -80,8 +91,20 @@ public class draw_view extends View {
                 break;
             case MotionEvent.ACTION_UP:
                 closeShapeIfNeeded();
+                float centerX = (minX + maxX) / 2;
+                float centerY = (minY + maxY) / 2;
+                float radius = Math.max(maxX - minX, maxY - minY) / 2; // Maximum distance from center to edges
+
+                // Configure the RadialGradient
+                RadialGradient gradient = new RadialGradient(centerX, centerY, radius, new int[] {Color.BLACK, Color.argb(175,0,0,0)}, null, Shader.TileMode.CLAMP);
+                fill_paint.setShader(gradient);
+                draw_canvas.drawPath(draw_path, fill_paint);
                 draw_canvas.drawPath(draw_path, draw_paint);
                 draw_path = new Path();
+                minX = Float.MAX_VALUE;
+                minY = Float.MAX_VALUE;
+                maxX = Float.MIN_VALUE;
+                maxY = Float.MIN_VALUE;
                 break;
             default:
                 return false;
@@ -111,12 +134,13 @@ public class draw_view extends View {
             draw_path.lineTo(start_point.x, start_point.y);
         }
         draw_path.close(); // This ensures the path is closed for filling
-        draw_paint.setStyle(Paint.Style.FILL_AND_STROKE);
+        //draw_paint.setStyle(Paint.Style.FILL_AND_STROKE);
     }
 
     public void onUndo(){
         if(!stack_paths.empty()){
             stack_paths.pop();
+            fill_paint.setShader(null);
             redrawShapes();
         }
     }

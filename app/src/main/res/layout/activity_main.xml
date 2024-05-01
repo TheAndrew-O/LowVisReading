@@ -18,7 +18,7 @@
             android:layout_margin="3dp"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1.42"
+            android:layout_weight="1.82"
             android:background="@color/white">
             <TextView
                 android:id="@+id/textDisplay"
@@ -35,7 +35,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.58"
+            android:layout_weight="0.18"
             android:background="#39FFFFFF"
             android:orientation="horizontal">
 
@@ -46,7 +46,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 app:fabCustomSize="100dp"
-                android:layout_marginBottom="150dp"
+                android:layout_marginBottom="30dp"
                 android:layout_marginLeft="16dp"
                 android:src="@drawable/ic_baseline_photo_camera_24"
                 android:backgroundTint="@color/AddButtonBlue">
@@ -69,7 +69,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="TEXT SIZE"
-                    android:layout_marginBottom="20dp"
+                    android:layout_marginBottom="10dp"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginRight="20dp"
                     android:textSize="22sp"
@@ -88,7 +88,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="BLIND SPOT SIZE"
-                    android:layout_marginBottom="100dp"
+                    android:layout_marginBottom="20dp"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginRight="20dp"
                     android:textSize="22sp"
