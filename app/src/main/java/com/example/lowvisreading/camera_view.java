@@ -30,6 +30,7 @@ import android.util.Size;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ScrollView;
@@ -64,6 +65,7 @@ public class camera_view extends AppCompatActivity implements bottom_sheet.Botto
     Bitmap bitmap;
     ImageAnalysis imageAnalysis;
     ImageView blindSpot;
+    FrameLayout blindnessBlur;
     TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
     final long[] lastAnalyzedTimeStamps = {System.currentTimeMillis()};
     private static final int REQUEST_CAMERA_CODE = 100;
@@ -87,6 +89,7 @@ public class camera_view extends AppCompatActivity implements bottom_sheet.Botto
         scrollView = findViewById(R.id.scroll);
         previewView = findViewById(R.id.cameraPreView);
         blindSpot = findViewById(R.id.blindSpot);
+        blindnessBlur = findViewById(R.id.blindArea);
         Bundle extras = getIntent().getExtras();
 
         // check if activity was given extras
@@ -287,6 +290,12 @@ public class camera_view extends AppCompatActivity implements bottom_sheet.Botto
                             String res = text.getText();
                             Spannable str = Spannable.Factory.getInstance().newSpannable(res.toUpperCase());
                             str.setSpan(new BackgroundColorSpan(Color.argb(175,0,0,0)), 0, res.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            System.out.println("SUCCESS");
+                            blindnessBlur.setBackgroundColor(Color.argb(200, 127, 127, 127));
+                            if (str.equals(""))
+                            {
+                                System.out.println("DETECTING EMPTY SUCCESS");
+                            }
                             if(currTime - lastAnalyzedTimeStamps[0] >= 3000)
                             {
                                 lastAnalyzedTimeStamps[0] = currTime;
@@ -303,7 +312,10 @@ public class camera_view extends AppCompatActivity implements bottom_sheet.Botto
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             Toast.makeText(camera_view.this, "IMAGE ANALYSIS FAILED!" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            System.out.println("FAILURE");
+                            blindnessBlur.setBackgroundColor(Color.argb(0, 127, 127, 127));
                             image.close();
+
                         }
                     });
                 }
