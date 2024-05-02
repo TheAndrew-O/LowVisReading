@@ -65,7 +65,8 @@ public class camera_view extends AppCompatActivity implements bottom_sheet.Botto
     Bitmap bitmap;
     ImageAnalysis imageAnalysis;
     ImageView blindSpot;
-    FrameLayout blindnessBlur;
+//    FrameLayout blindnessBlur;
+    ImageView blindnessBlur;
     TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
     final long[] lastAnalyzedTimeStamps = {System.currentTimeMillis()};
     private static final int REQUEST_CAMERA_CODE = 100;
@@ -102,6 +103,9 @@ public class camera_view extends AppCompatActivity implements bottom_sheet.Botto
             params.width = blindSize;
             params.height = blindSize;
             blindSpot.setLayoutParams(params);
+            ViewGroup.LayoutParams area_params = blindnessBlur.getLayoutParams();
+            area_params.height = blindSize;
+            blindnessBlur.setLayoutParams(area_params);
             int left  = extras.getInt("left", 100);
             int  top = extras.getInt("top", 100);
             curved_text.setBoundary(new RectF((float)left, (float)top, (float)(left + blindSize), (float)(top + blindSize)));
@@ -239,6 +243,9 @@ public class camera_view extends AppCompatActivity implements bottom_sheet.Botto
         params.width = blindSpotSize;
         params.height = blindSpotSize;
         blindSpot.setLayoutParams(params);
+        ViewGroup.LayoutParams area_params = blindnessBlur.getLayoutParams();
+        area_params.height = blindSpotSize;
+        blindnessBlur.setLayoutParams(area_params);
         RectF rect = getBlindSpotBoundary();
         curved_text.setBoundary(rect);
     }
@@ -290,12 +297,6 @@ public class camera_view extends AppCompatActivity implements bottom_sheet.Botto
                             String res = text.getText();
                             Spannable str = Spannable.Factory.getInstance().newSpannable(res.toUpperCase());
                             str.setSpan(new BackgroundColorSpan(Color.argb(175,0,0,0)), 0, res.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                            System.out.println("SUCCESS");
-                            blindnessBlur.setBackgroundColor(Color.argb(200, 127, 127, 127));
-                            if (str.equals(""))
-                            {
-                                System.out.println("DETECTING EMPTY SUCCESS");
-                            }
                             if(currTime - lastAnalyzedTimeStamps[0] >= 3000)
                             {
                                 lastAnalyzedTimeStamps[0] = currTime;
@@ -312,8 +313,7 @@ public class camera_view extends AppCompatActivity implements bottom_sheet.Botto
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             Toast.makeText(camera_view.this, "IMAGE ANALYSIS FAILED!" + e.getMessage(), Toast.LENGTH_SHORT).show();
-                            System.out.println("FAILURE");
-                            blindnessBlur.setBackgroundColor(Color.argb(0, 127, 127, 127));
+//                            blindnessBlur.setBackgroundColor(Color.argb(0, 127, 127, 127));
                             image.close();
 
                         }

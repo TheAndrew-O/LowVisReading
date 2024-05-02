@@ -17,94 +17,76 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:weightSum="2">
-        <LinearLayout
+        <com.example.lowvisreading.customTextView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:layout_weight="1"
-            android:id="@+id/aboveBlind">
-        </LinearLayout>
-        <FrameLayout
+            android:layout_height="0dp"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:id="@+id/curvedTextView"
+            android:layout_weight="1.82"
+            android:visibility="gone"/>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:id="@+id/blindArea"
-            android:background="#AA888888">
-            <ImageView
-                android:id="@+id/blindSpot"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_gravity="center"
-                android:layout_marginBottom="0dp"
-                android:src="@drawable/blind_spot" />
-            <ImageView
-                android:id="@+id/focalPoint"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center"
-                android:layout_marginBottom="0dp"
-                android:src="@drawable/roundbutton" />
-        </FrameLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:layout_weight="1"
-            android:weightSum="2">
-            <com.example.lowvisreading.customTextView
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_gravity="center_horizontal|center_vertical"
-                android:id="@+id/curvedTextView"
-                android:layout_weight="1.82"
-                android:visibility="gone"/>
-            <ScrollView
-                android:id="@+id/scroll"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1.82">
-                <TextView
-                    android:id="@+id/textDisplay"
-                    android:layout_width="match_parent"
-                    android:textSize="22sp"
-                    android:textColor="@color/white"
-                    android:text=""
-                    android:gravity="center_horizontal"
-                    android:layout_height="match_parent"
-                    android:paddingTop="0dp"/>
-            </ScrollView>
+            android:layout_weight="0.18"
+            android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/dummy"
+                android:tint="@color/white"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.18"
-                android:orientation="horizontal">
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/capture"
-                    android:tint="@color/white"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    app:fabCustomSize="100dp"
-                    android:layout_marginBottom="150dp"
-                    android:layout_marginLeft="16dp"
-                    android:src="@drawable/ic_baseline_photo_camera_24"
-                    android:backgroundTint="@color/AddButtonBlue">
-                </com.google.android.material.floatingactionbutton.FloatingActionButton>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="bottom"
-                    android:gravity="bottom"
-                    android:orientation="vertical">
-
-                </LinearLayout>
+                android:layout_gravity="bottom"
+                app:fabCustomSize="100dp"
+                android:layout_marginBottom="150dp"
+                android:layout_marginLeft="16dp"
+                android:src="@drawable/ic_baseline_photo_camera_24"
+                android:backgroundTint="@color/AddButtonBlue"
+                android:visibility="invisible">
+            </com.google.android.material.floatingactionbutton.FloatingActionButton>
         </LinearLayout>
-        </LinearLayout>
+
+        <ScrollView
+            android:id="@+id/scroll"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1.30">
+            <TextView
+                android:id="@+id/textDisplay"
+                android:layout_width="match_parent"
+                android:textSize="22sp"
+                android:textColor="@color/white"
+                android:text=""
+                android:gravity="center_horizontal"
+                android:layout_height="match_parent"
+                android:paddingTop="150dp"
+                android:paddingBottom="230dp"/>
+        </ScrollView>
+
     </LinearLayout>
 
+    <ImageView
+        android:id="@+id/blindArea"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="50dp"
+        android:background="@drawable/blur_area"/>
 
+    <ImageView
+        android:id="@+id/blindSpot"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="50dp"
+        android:src="@drawable/blind_spot" />
+    <ImageView
+        android:id="@+id/focalPoint"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="50dp"
+        android:src="@drawable/roundbutton" />
 
     <ImageButton
         android:id="@+id/text_rec"
@@ -136,5 +118,17 @@
         android:rotationY="180"
         android:padding="5dp"
         android:background="?attr/selectableItemBackgroundBorderless"/>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/capture"
+        android:tint="@color/white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:fabCustomSize="80dp"
+        android:layout_marginBottom="70dp"
+        android:layout_marginLeft="60dp"
+        android:src="@drawable/ic_baseline_photo_camera_24"
+        android:backgroundTint="@color/AddButtonBlue">
+    </com.google.android.material.floatingactionbutton.FloatingActionButton>
 
 </FrameLayout>

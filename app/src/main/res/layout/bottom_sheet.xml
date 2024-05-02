@@ -30,7 +30,7 @@
         android:thumb="@drawable/custom_seekbaar2"
         android:progressDrawable="@drawable/seekbar_prog2"
         android:splitTrack="false"
-        android:max="2000"
+        android:max="900"
         android:min="100"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
