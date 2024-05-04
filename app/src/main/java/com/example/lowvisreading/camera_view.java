@@ -17,9 +17,11 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.text.Spannable;
@@ -289,6 +291,25 @@ public class camera_view extends AppCompatActivity implements bottom_sheet.Botto
             imageAnalysis.setAnalyzer(getMainExecutor(), new ImageAnalysis.Analyzer() {
                 @Override
                 public void analyze(@NonNull ImageProxy image) {
+                    /*
+                    int w = Resources.getSystem().getDisplayMetrics().widthPixels;
+                    int h = Resources.getSystem().getDisplayMetrics().heightPixels;
+                    Bitmap tmp_bitmap = Bitmap.createScaledBitmap(image, w, h, false);
+                    */
+                    /*
+
+
+                    //blindSpot.getLocationOnScreen(blindspot_coords);
+
+                    Bitmap cropped_bitmap = Bitmap.createBitmap(tmp_bitmap, left, top, width, height);
+                    @SuppressLint("UnsafeOptInUsageError") InputImage mediaImage = InputImage.fromBitmap(cropped_bitmap, image.getImageInfo().getRotationDegrees());
+                     */
+                    int[] blindspot_coords = new int[2];
+                    int left = blindspot_coords[0];
+                    int top = blindspot_coords[1];
+                    int width = blindSpot.getDrawable().getIntrinsicWidth();
+                    int height = blindSpot.getDrawable().getIntrinsicHeight();
+                    image.setCropRect(new Rect(left, top, left+width, top+height));
                     @SuppressLint("UnsafeOptInUsageError") InputImage mediaImage = InputImage.fromMediaImage(image.getImage(), image.getImageInfo().getRotationDegrees());
                     recognizer.process(mediaImage).addOnSuccessListener(new OnSuccessListener<Text>() {
                         @Override
